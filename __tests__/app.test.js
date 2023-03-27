@@ -14,6 +14,7 @@ describe("GET /api/topics", () => {
         .expect(200)
         .then(({ body }) => {
           expect(body).toBeInstanceOf(Array);
+          expect(body.length).toBeGreaterThan(0);
           body.forEach((topic) => {
             expect(typeof topic).toBe("object");
             expect(topic).toHaveProperty("description");
