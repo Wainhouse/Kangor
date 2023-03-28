@@ -3,6 +3,8 @@ const request = require('supertest')
 const seed = require('../db/seeds/seed')
 const {topicData, userData, articleData, commentData} = require('../db/data/test-data/index')
 const db = require('../db/connection')
+require('jest-sorted');
+
 
 beforeEach(() => seed({ topicData, userData, articleData, commentData }));
 afterAll(() => db.end());
@@ -19,6 +21,35 @@ describe("GET /api/topics", () => {
             expect(typeof topic).toBe("object");
             expect(topic).toHaveProperty("description");
             expect(topic).toHaveProperty("slug");
+          });
+        });
+    });
+    test("400: responds with a bad request message", () => {
+      return request(app)
+        .get("/api/topppes")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("404: Not found");
+        });
+    });
+
+  });
+
+  describe("GET /api/articles", () => {
+    test("200: returns array of topics objects with correct props", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).toBeInstanceOf(Array);
+          expect(body).toBeSorted({ descending: true });
+          expect(body.length).toBeGreaterThan(0);
+          body.forEach((article) => {
+            expect(typeof article).toBe("comment_id");
+            expect(article).toHaveProperty("description");
+            expect(article).toHaveProperty("title");
+            expect(article).toHaveProperty("article_img_url");
+            expect(article).toHaveProperty("comment_count");
           });
         });
     });
