@@ -10,15 +10,7 @@ exports.fetchArticleById = (id) => {
           msg: `404: Article not found`,
         });
       }
-      return data.rows;
+      return data.rows[0];
     })
-    .catch((err) => {
-      if (err.code === "22P02") {
-        return Promise.reject({
-          status: 400,
-          msg: "400: Invalid article_id",
-        });
-      }
-      return Promise.reject(err);
-    });
+    
 };

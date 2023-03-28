@@ -33,7 +33,7 @@ describe("GET /api/topics", () => {
 
   });
 
-  describe("GET /api/articles ID", () => {
+  describe.only("GET /api/articles ID", () => {
     test("200 - responds with correct article Object", () => {
       return request(app)
       .get("/api/articles/1")
@@ -49,7 +49,7 @@ describe("GET /api/topics", () => {
           votes: 100,
           article_img_url:
             'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
-        } }
+        }}
         )
         expect(body).toBeInstanceOf(Object)
       })
@@ -62,7 +62,7 @@ describe("GET /api/topics", () => {
           expect(body.msg).toBe("404: Article not found");
         });
     });
-    test.only("400: responds with an Internal server error", () => {
+    test("400: responds with an Internal server error", () => {
       return request(app)
         .get("/api/articles/dfgdfgd")
         .expect(400)
