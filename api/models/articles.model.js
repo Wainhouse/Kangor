@@ -24,7 +24,7 @@ exports.fetchAllArticles = () => {
     articles
     LEFT JOIN comments on articles.article_id = comments.article_id
     GROUP BY articles.article_id
-    ORDER BY articles.article_id ASC;
+    ORDER BY articles.created_at DESC;
   `
   )
   .then((res) => res.rows);
