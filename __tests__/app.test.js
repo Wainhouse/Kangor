@@ -29,7 +29,7 @@ describe("GET /api/topics", () => {
         .get("/api/topppes")
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("404: Not found");
+          expect(body.msg).toBe("404: Article not found");
         });
     });
 
@@ -42,15 +42,19 @@ describe("GET /api/topics", () => {
         .expect(200)
         .then(({ body }) => {
           expect(body).toBeInstanceOf(Array);
-          expect(body).toBeSorted({ descending: true });
+          expect(body).toBeSortedBy('created_at', { descending: true });
           expect(body.length).toBeGreaterThan(0);
           body.forEach((article) => {
-            expect(typeof article).toBe("comment_id");
-            expect(article).toHaveProperty("description");
-            expect(article).toHaveProperty("title");
-            expect(article).toHaveProperty("article_img_url");
-            expect(article).toHaveProperty("comment_count");
-          });
+          expect(typeof article).toBe("object");
+          expect(article).toHaveProperty("article_id");
+          expect(article).toHaveProperty("title");
+          expect(article).toHaveProperty("body");
+          expect(article).toHaveProperty("votes");
+          expect(article).toHaveProperty("topic");
+          expect(article).toHaveProperty("author");
+          expect(article).toHaveProperty("created_at");
+          expect(article).toHaveProperty("comment_count");
+          })
         });
     });
     test("400: responds with a bad request message", () => {
@@ -58,13 +62,13 @@ describe("GET /api/topics", () => {
         .get("/api/topppes")
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("404: Not found");
+          expect(body.msg).toBe("404: Article not found");
         });
     });
 
   });
 
-  describe.only("GET /api/articles ID", () => {
+  describe("GET /api/articles ID", () => {
     test("200 - responds with correct article Object", () => {
       return request(app)
       .get("/api/articles/1")
@@ -104,3 +108,50 @@ describe("GET /api/topics", () => {
     
     
   })  
+
+  describe("when given a valid article ID returns with comments for correct artice", () => {
+    it("returns an array of comments objects with correct properties", () => {
+      return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({body}) => {
+        expect(body.comments).toBeInstanceOf(Array);
+        expect(body.comments).toBeSorted({ descending: true });
+        expect(body.comments.length).toBeGreaterThan(0);
+        body.comments.forEach((comment) => {
+        expect(typeof comment).toBe("object");
+        expect(comment).toHaveProperty("comment_id");
+        expect(comment).toHaveProperty("body");
+        expect(comment).toHaveProperty("votes");
+        expect(comment).toHaveProperty("author");
+        expect(comment).toHaveProperty("created_at");
+      });
+      });
+    });
+    it("404: responds with a bad request, no article exists", () => {
+      return request(app)
+        .get("/api/articles/205345345/comments")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("404: Article not found");
+        });
+    });
+    it("400: Invalid article_id", () => {
+      return request(app)
+        .get("/api/articles/sdfsdfsdf/comments")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("400: Invalid article_id");
+        });
+    });
+    it("returns an empty array of comments when article has no comments", () => {
+      return request(app)
+        .get("/api/articles/7/comments")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comments).toBeInstanceOf(Object);
+          expect(body.comments.length).toBe(0);
+        });
+  })
+    
+  })
