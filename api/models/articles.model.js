@@ -11,22 +11,31 @@ exports.fetchArticleById = (id) => {
         });
       }
       return data.rows[0];
-    })
-    
+    });
 };
-
 
 exports.fetchAllArticles = () => {
   return db
-  .query(
-    `
-    SELECT articles.*, COUNT(articles.article_id) AS comment_count FROM
+    .query(
+      `
+    SELECT articles.*, CAST(COALESCE(COUNT(comments.article_id),0) AS INT) AS comment_count FROM
     articles
     LEFT JOIN comments on articles.article_id = comments.article_id
     GROUP BY articles.article_id
     ORDER BY articles.created_at DESC;
   `
-  )
-  .then((res) => res.rows);
- }
+    )
+    .then((data) => data.rows);
+};
 
+exports.fetchArticlesComments = (article_id) => {
+  const articleId = article_id;
+  return db
+    .query(
+      `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC;`,
+      [articleId]
+    )
+    .then((data) => {
+      return data.rows;
+    });
+};
