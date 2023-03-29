@@ -115,7 +115,6 @@ describe("GET /api/topics", () => {
       .get("/api/articles/1/comments")
       .expect(200)
       .then(({body}) => {
-        console.log("1", body);
         expect(body.comments).toBeInstanceOf(Array);
         expect(body.comments).toBeSorted({ descending: true });
         expect(body.comments.length).toBeGreaterThan(0);
@@ -150,7 +149,6 @@ describe("GET /api/topics", () => {
         .get("/api/articles/7/comments")
         .expect(200)
         .then(({ body }) => {
-          console.log(body.comments);
           expect(body.comments).toBeInstanceOf(Object);
           expect(body.comments.length).toBe(0);
         });
