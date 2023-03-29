@@ -23,7 +23,7 @@ exports.getArticlesComments = (req, res, next) => {
       else Promise.reject({status: 404, msg:'Article not found'});
     })
     .then((data) => {
-      res.status(200).send(data);
+      res.status(200).send({comments: data});
     })
     .catch((err) => {
       next(err);

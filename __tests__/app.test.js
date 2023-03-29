@@ -44,16 +44,17 @@ describe("GET /api/topics", () => {
           expect(body).toBeInstanceOf(Array);
           expect(body).toBeSortedBy('created_at', { descending: true });
           expect(body.length).toBeGreaterThan(0);
-          expect(typeof body[0]).toBe("object");
-          expect(body[0]).toHaveProperty("article_id");
-          expect(body[0]).toHaveProperty("title");
-          expect(body[0]).toHaveProperty("body");
-          expect(body[0]).toHaveProperty("votes");
-          expect(body[0]).toHaveProperty("topic");
-          expect(body[0]).toHaveProperty("author");
-          expect(body[0]).toHaveProperty("created_at");
-          expect(body[0]).toHaveProperty("comment_count");
-
+          body.forEach((article) => {
+          expect(typeof article).toBe("object");
+          expect(article).toHaveProperty("article_id");
+          expect(article).toHaveProperty("title");
+          expect(article).toHaveProperty("body");
+          expect(article).toHaveProperty("votes");
+          expect(article).toHaveProperty("topic");
+          expect(article).toHaveProperty("author");
+          expect(article).toHaveProperty("created_at");
+          expect(article).toHaveProperty("comment_count");
+          })
         });
     });
     test("400: responds with a bad request message", () => {
@@ -114,15 +115,18 @@ describe("GET /api/topics", () => {
       .get("/api/articles/1/comments")
       .expect(200)
       .then(({body}) => {
-        expect(body).toBeInstanceOf(Array);
-        expect(body).toBeSorted({ descending: true });
-        expect(body.length).toBeGreaterThan(0);
-        expect(typeof body[0]).toBe("object");
-        expect(body[0]).toHaveProperty("comment_id");
-        expect(body[0]).toHaveProperty("body");
-        expect(body[0]).toHaveProperty("votes");
-        expect(body[0]).toHaveProperty("author");
-        expect(body[0]).toHaveProperty("created_at");
+        console.log("1", body);
+        expect(body.comments).toBeInstanceOf(Array);
+        expect(body.comments).toBeSorted({ descending: true });
+        expect(body.comments.length).toBeGreaterThan(0);
+        body.comments.forEach((comment) => {
+        expect(typeof comment).toBe("object");
+        expect(comment).toHaveProperty("comment_id");
+        expect(comment).toHaveProperty("body");
+        expect(comment).toHaveProperty("votes");
+        expect(comment).toHaveProperty("author");
+        expect(comment).toHaveProperty("created_at");
+      });
       });
     });
     it("404: responds with a bad request, no article exists", () => {
@@ -133,7 +137,7 @@ describe("GET /api/topics", () => {
           expect(body.msg).toBe("404: Article not found");
         });
     });
-    it("400: responds with an Internal server error", () => {
+    it("400: Invalid article_id", () => {
       return request(app)
         .get("/api/articles/sdfsdfsdf/comments")
         .expect(400)
@@ -141,4 +145,15 @@ describe("GET /api/topics", () => {
           expect(body.msg).toBe("400: Invalid article_id");
         });
     });
+    it("returns an empty array of comments when article has no comments", () => {
+      return request(app)
+        .get("/api/articles/7/comments")
+        .expect(200)
+        .then(({ body }) => {
+          console.log(body.comments);
+          expect(body.comments).toBeInstanceOf(Object);
+          expect(body.comments.length).toBe(0);
+        });
+  })
+    
   })
