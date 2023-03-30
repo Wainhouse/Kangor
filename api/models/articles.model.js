@@ -51,5 +51,5 @@ exports.addComment = (comment, articleId) => {
     const values = [body, username, articleId];
 
     return db.query(query, values)
-      .then(result => result.rows[0])
+      .then((data) => data.rows[0])
 }

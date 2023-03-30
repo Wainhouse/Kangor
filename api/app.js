@@ -29,6 +29,9 @@ app.use((err, req, res, next) => {
   if (err.code === "22P02") {
     res.status(400).send({ msg: "400: Invalid article_id" });
   }
+  if (err.code === "23503") {
+    res.status(404).send({ msg: "404: User not found" });
+  }
 });
 app.use((err, req, res, next) => {
   res.status(500).send({ msg: "Internal Server Error" });
