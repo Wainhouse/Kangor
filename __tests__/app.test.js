@@ -191,7 +191,6 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(body.comment.body).toBe("Yo wadup man!");
         expect(body.comment.author).toBe("butter_bridge");
         expect(body.comment.article_id).toBe(3);
-        // expect(body.comment.comment_id).toBe(19)
       });
   });
   it('404 - POST request  that doesnt exist', () => {
@@ -231,6 +230,20 @@ it('400 - POST missing required fields of username or body', () => {
     .expect(400)
     .then(({ body }) => {
       expect(body.msg).toBe("400: not found, make sure you have included a username and a comment");
+    });
+});
+it.only('400 - POST missing required fields of username or body', () => {
+  const inputComment = {
+    username: "banana",
+    body: "hellos everyone"
+  };
+
+  return request(app)
+    .post("/api/articles/7/comments")
+    .send(inputComment)
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("404: User not found");
     });
 });
 
