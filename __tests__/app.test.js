@@ -185,8 +185,10 @@ describe("PATCH /api/articles/:article_id", () => {
       })
   });
   test("404: responds with a bad request message", () => {
+    const newVote = { inc_votes : 1 }
     return request(app)
       .patch("/api/article/1234567890")
+      .send(newVote)
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("404: Article not found");
