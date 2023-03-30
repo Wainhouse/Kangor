@@ -1,5 +1,6 @@
 const db = require("../../db/connection");
 
+
 exports.fetchArticleById = (id) => {
   return db
     .query(`SELECT * FROM articles WHERE article_id = $1;`, [id])
@@ -39,3 +40,16 @@ exports.fetchArticlesComments = (article_id) => {
       return data.rows;
     });
 };
+
+exports.addComment = (comment, articleId) => {
+  const { body, username } = comment;
+  const query = `
+      INSERT INTO comments (body, author, article_id)
+      VALUES ($1, $2, $3)
+      RETURNING *;
+    `
+    const values = [body, username, articleId];
+
+    return db.query(query, values)
+      .then(result => result.rows[0])
+}
