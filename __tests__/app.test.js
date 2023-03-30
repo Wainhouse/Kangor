@@ -197,7 +197,7 @@ describe("PATCH /api/articles/:article_id", () => {
         expect(body.msg).toBe("404: Article not found");
       });
   });
-
+});
 describe("POST /api/articles/:article_id/comments", () => {
   it("201 - responds with a newly created comment ", () => {
     const newComment = {
@@ -275,7 +275,7 @@ it('400 - POST missing required fields of username or body', () => {
       expect(body.msg).toBe("400: not found, make sure you have included a username and a comment");
     });
 });
-it.only('400 - POST missing required fields of username or body', () => {
+it('400 - POST missing required fields of username or body', () => {
   const inputComment = {
     username: "banana",
     body: "hellos everyone"
