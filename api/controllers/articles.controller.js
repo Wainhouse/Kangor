@@ -24,7 +24,7 @@ exports.getArticlesComments = (req, res, next) => {
   const articleId = req.params.article_id;
   fetchArticleById(articleId)
     .then((data) => {
-      res.status(200).send({ comments: data });
+      res.status(200).send({ comments: [data] });
     })
     .catch((err) => {
       next(err);

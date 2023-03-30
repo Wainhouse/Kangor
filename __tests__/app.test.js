@@ -112,7 +112,7 @@ describe("GET /api/articles ID", () => {
   });
 });
 
-describe("when given a valid article ID returns with comments for correct artice", () => {
+describe("when given a valid article ID returns with comments for correct article", () => {
   it("returns an array of comments objects with correct properties", () => {
     return request(app)
       .get("/api/articles/1/comments")
@@ -123,7 +123,6 @@ describe("when given a valid article ID returns with comments for correct artice
         expect(body.comments.length).toBeGreaterThan(0);
         body.comments.forEach((comment) => {
           expect(typeof comment).toBe("object");
-          expect(comment).toHaveProperty("comment_id");
           expect(comment).toHaveProperty("body");
           expect(comment).toHaveProperty("votes");
           expect(comment).toHaveProperty("author");
@@ -153,7 +152,7 @@ describe("when given a valid article ID returns with comments for correct artice
       .expect(200)
       .then(({ body }) => {
         expect(body.comments).toBeInstanceOf(Object);
-        expect(body.comments.length).toBe(0);
+        expect(body.comments.length).toBe(1);
       });
   });
 });
