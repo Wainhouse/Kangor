@@ -158,7 +158,7 @@ describe("when given a valid article ID returns with comments for correct artice
   });
 });
 
-describe.only("PATCH /api/articles/:article_id", () => {
+describe("PATCH /api/articles/:article_id", () => {
   it("responds with status 200 and updated article object", () => {
     const newVote = { inc_votes : 1 }
     return request(app)
