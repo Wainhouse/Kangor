@@ -3,7 +3,8 @@ const {
   fetchAllArticles,
   fetchArticlesComments,
   updateArticle,
-  addComment
+  addComment,
+  deleteCommentByID,
 } = require("../models/articles.model");
 
 exports.getArticlesById = (req, res, next) => {
@@ -40,8 +41,10 @@ exports.getArticlesComments = (req, res, next) => {
 exports.postComment = (req, res, next) => {
   const comment = req.body;
   const articleId = req.params.article_id;
-  if(!comment.body || !comment.username) {
-    return res.status(400).send({msg: `400: not found, make sure you have included a username and a comment` })
+  if (!comment.body || !comment.username) {
+    return res.status(400).send({
+      msg: `400: not found, make sure you have included a username and a comment`,
+    });
   }
 
   fetchArticleById(articleId)
@@ -67,6 +70,18 @@ exports.patchArticles = (req, res, next) => {
     })
     .then((data) => res.status(200).send({ article: data }))
     .catch((err) => {
+      next(err);
+    });
+};
+
+exports.deleteComment = (req, res, next) => {
+  const { comment_id: id } = req.params;
+  deleteCommentByID(id)
+    .then(() => {
+      res.status(204).send();
+    })
+    .catch((err) => {
+      console.log(err);
       next(err);
     });
 };

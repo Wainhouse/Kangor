@@ -70,7 +70,6 @@ describe("GET /api/articles", () => {
       });
   });
 });
-
 describe("GET /api/articles ID", () => {
   test("200 - responds with correct article Object", () => {
     return request(app)
@@ -110,7 +109,7 @@ describe("GET /api/articles ID", () => {
       });
   });
 });
-describe("when given a valid article ID returns with comments for correct article", () => {
+describe("GET /api/articles/:comments_id", () => {
   it("returns an array of comments objects with correct properties", () => {
     return request(app)
       .get("/api/articles/1/comments")
@@ -154,7 +153,6 @@ describe("when given a valid article ID returns with comments for correct articl
       });
   });
 });
-
 describe("PATCH /api/articles/:article_id", () => {
   it("responds with status 200 and updated article object", () => {
     const newVote = { inc_votes: 1 };
@@ -193,7 +191,7 @@ describe("PATCH /api/articles/:article_id", () => {
       });
   });
 });
-describe.only("POST /api/articles/:article_id/comments", () => {
+describe("POST /api/articles/:article_id/comments", () => {
   it("201 - responds with a newly created comment ", () => {
     const newComment = {
       body: "Yo wadup man!",
@@ -272,5 +270,16 @@ describe.only("POST /api/articles/:article_id/comments", () => {
           "400: not found, make sure you have included a username and a comment"
         );
       });
+  });
+});
+describe("DELETE api/comments/:comment_id", () => {
+  it('Status 204 "No Content" - Delete Comment', () => {
+    return request(app).delete("/api/comments/5").expect(204);
+  });
+  it('Status 404 "Not Found" - Comment id does not exists', () => {
+    return request(app).delete("/api/comments/1123423").expect(404);
+  });
+  it('Status 400 "Bad Request" - Incorrect comment id', () => {
+    return request(app).delete("/api/comments/ada3q3e").expect(400);
   });
 });
