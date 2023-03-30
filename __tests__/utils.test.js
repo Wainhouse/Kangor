@@ -1,3 +1,4 @@
+const { voteCounter } = require("../api/utils/utils");
 const {
   convertTimestampToDate,
   createRef,
@@ -102,3 +103,14 @@ describe("formatComments", () => {
     expect(formattedComments[0].created_at).toEqual(new Date(timestamp));
   });
 });
+
+describe('voteCounter()', () => {
+  it('should return a number of a key when passed an obj', () => {
+    const input = { inc_votes : 1 }
+    const negInput = { inc_votes : -20 }
+
+    expect(voteCounter(input)).toBe(1)
+    expect(voteCounter(negInput)).toBe(-20)
+  });
+});
+
