@@ -2,7 +2,8 @@ const {
   fetchArticleById,
   fetchAllArticles,
   fetchArticlesComments,
-  addComment,
+  updateArticle,
+  addComment
 } = require("../models/articles.model");
 
 exports.getArticlesById = (req, res, next) => {
@@ -24,6 +25,7 @@ exports.getArticlesComments = (req, res, next) => {
   const articleId = req.params.article_id;
   fetchArticleById(articleId)
     .then((data) => {
+      res.status(200).send({ comments: [data] });
       if (data) return fetchArticlesComments(articleId);
       else Promise.reject({ status: 404, msg: "Article not found" });
     })
@@ -49,6 +51,21 @@ exports.postComment = (req, res, next) => {
     .then((data) => {
       res.status(201).send({ comment: data });
     })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.patchArticles = (req, res, next) => {
+  const voteNum = req.body.inc_votes;
+  const articleId = req.params.article_id;
+  fetchArticleById(articleId)
+    .then((data) => {
+      if (data) {
+        return updateArticle(data, voteNum);
+      }
+    })
+    .then((data) => res.status(200).send({ article: data }))
     .catch((err) => {
       next(err);
     });

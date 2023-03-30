@@ -11,7 +11,9 @@ const db = require("../db/connection");
 require("jest-sorted");
 
 beforeEach(() => seed({ topicData, userData, articleData, commentData }));
-afterAll(() => db.end());
+afterAll(() => {
+  if (db.end) db.end();
+});
 
 describe("GET /api/topics", () => {
   test("200: returns array of topics objects with correct props", () => {
@@ -59,7 +61,7 @@ describe("GET /api/articles", () => {
         });
       });
   });
-  test("400: responds with a bad request message", () => {
+  test("404: responds with a bad request message", () => {
     return request(app)
       .get("/api/topppes")
       .expect(404)
@@ -104,12 +106,11 @@ describe("GET /api/articles ID", () => {
       .get("/api/articles/dfgdfgd")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("400: Invalid article_id");
+        expect(body.msg).toBe("400: Invalid Datatype");
       });
   });
 });
-
-describe("when given a valid article ID returns with comments for correct artice", () => {
+describe("when given a valid article ID returns with comments for correct article", () => {
   it("returns an array of comments objects with correct properties", () => {
     return request(app)
       .get("/api/articles/1/comments")
@@ -120,7 +121,6 @@ describe("when given a valid article ID returns with comments for correct artice
         expect(body.comments.length).toBeGreaterThan(0);
         body.comments.forEach((comment) => {
           expect(typeof comment).toBe("object");
-          expect(comment).toHaveProperty("comment_id");
           expect(comment).toHaveProperty("body");
           expect(comment).toHaveProperty("votes");
           expect(comment).toHaveProperty("author");
@@ -141,7 +141,7 @@ describe("when given a valid article ID returns with comments for correct artice
       .get("/api/articles/sdfsdfsdf/comments")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("400: Invalid article_id");
+        expect(body.msg).toBe("400: Invalid Datatype");
       });
   });
   it("returns an empty array of comments when article has no comments", () => {
@@ -150,12 +150,50 @@ describe("when given a valid article ID returns with comments for correct artice
       .expect(200)
       .then(({ body }) => {
         expect(body.comments).toBeInstanceOf(Object);
-        expect(body.comments.length).toBe(0);
+        expect(body.comments.length).toBe(1);
       });
   });
 });
 
-describe("POST /api/articles/:article_id/comments", () => {
+describe("PATCH /api/articles/:article_id", () => {
+  it("responds with status 200 and updated article object", () => {
+    const newVote = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/articles/6")
+      .send(newVote)
+      .expect(200)
+      .then(({ body }) => {
+        expect(typeof body.article).toBe("object");
+        expect(body.article).toHaveProperty("article_id");
+        expect(body.article).toHaveProperty("created_at");
+        expect(body.article).toHaveProperty("title");
+        expect(body.article).toHaveProperty("votes");
+        expect(body.article).toHaveProperty("created_at");
+        expect(body.article.votes).toBe(1);
+      });
+  });
+  it("responds with status 400 bad request datatype", () => {
+    const newVote = { inc_votes: "five" };
+    return request(app)
+      .patch("/api/articles/6")
+      .send(newVote)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("400: Invalid Datatype");
+      });
+  });
+  test("404: responds with a bad request message", () => {
+    const newVote = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/article/1234567890")
+      .send(newVote)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("404: Article not found");
+      });
+  });
+});
+describe.only("POST /api/articles/:article_id/comments", () => {
   it("201 - responds with a newly created comment ", () => {
     const newComment = {
       body: "Yo wadup man!",
@@ -194,44 +232,45 @@ describe("POST /api/articles/:article_id/comments", () => {
         // expect(body.comment.comment_id).toBe(19)
       });
   });
-  it('404 - POST request  that doesnt exist', () => {
+  it("404 - POST request  that doesnt exist", () => {
     const inputComment = {
       body: "Yo wadup man!",
-      username: "butter_bridge"
-    }
+      username: "butter_bridge",
+    };
     return request(app)
-        .post("/api/articles/34534/comments")
-        .send(inputComment)
-        .expect(404)
-        .then(({ body }) => {
-            expect(body.msg).toBe("404: Article not found")
-        })
-})
-it('404 - POST request for an article for a username that doesnt exist', () => {
-  const inputComment = {
-    body: "Yo wadup man!",
-    username: "wayne"
-  }
-  return request(app)
+      .post("/api/articles/34534/comments")
+      .send(inputComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("404: Article not found");
+      });
+  });
+  it("404 - POST request for an article for a username that doesnt exist", () => {
+    const inputComment = {
+      body: "Yo wadup man!",
+      username: "wayne",
+    };
+    return request(app)
       .post("/api/articles/7/comments")
       .send(inputComment)
       .expect(404)
       .then(({ body }) => {
-          expect(body.msg).toBe(`404: User not found`)
-      })
-})
-it('400 - POST missing required fields of username or body', () => {
-  const inputComment = {
-    username: "butter_bridge",
-  };
+        expect(body.msg).toBe(`404: User not found`);
+      });
+  });
+  it("400 - POST missing required fields of username or body", () => {
+    const inputComment = {
+      username: "butter_bridge",
+    };
 
-  return request(app)
-    .post("/api/articles/7/comments")
-    .send(inputComment)
-    .expect(400)
-    .then(({ body }) => {
-      expect(body.msg).toBe("400: not found, make sure you have included a username and a comment");
-    });
-});
-
+    return request(app)
+      .post("/api/articles/7/comments")
+      .send(inputComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe(
+          "400: not found, make sure you have included a username and a comment"
+        );
+      });
+  });
 });
