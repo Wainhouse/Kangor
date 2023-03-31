@@ -3,12 +3,14 @@ const express = require("express");
 const {
   getArticlesById,
   getArticles,
-  postComment,
   getArticlesComments,
+  postComment,
   patchArticles,
-  deleteComment
+  deleteComment,
 } = require("./controllers/articles.controller");
 const { getTopics } = require("./controllers/topics.controller");
+const { getUsers } = require("./controllers/users.controller");
+
 const app = express();
 
 app.use(express.json());
@@ -16,6 +18,7 @@ app.use(express.json());
 app.get("/api/topics", getTopics);
 app.get("/api/articles/:article_id", getArticlesById);
 app.get("/api/articles", getArticles);
+app.get("/api/users", getUsers);
 app.get("/api/articles/:article_id/comments", getArticlesComments);
 app.post("/api/articles/:article_id/comments", postComment);
 app.patch("/api/articles/:article_id", patchArticles);
