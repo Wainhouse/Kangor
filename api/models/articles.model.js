@@ -46,9 +46,7 @@ exports.fetchAllArticles = ({
   `;
   const values = topic ? [topic] : [];
   return db.query(query, values).then((data) => {
-    console.log("row count: ", data.rowCount);
     if (data.rowCount === 0 && topic) {
-      console.log("im here");
        throw{
         status: 400,
         msg: `400: Bad Request - Invalid topic value`
