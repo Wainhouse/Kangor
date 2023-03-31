@@ -69,3 +69,19 @@ exports.addComment = (comment, articleId) => {
       .then((data) => data.rows[0])
 }
 
+exports.deleteCommentByID = (commentId) => {
+  if (!commentId || isNaN(Number(commentId))) {
+    throw { status: 400, msg: "400: Bad Request - Invalid Comment ID" };
+  }
+  const query = `
+      DELETE FROM comments WHERE comment_id = $1 RETURNING *;
+    `;
+  const values = [commentId];
+  return db.query(query, values).then((data) => {
+    if (data.rows.length === 0) {
+      throw { status: 404, msg: "404: Not Found - Comment does not exist" };
+    }
+    return data.rows[0];
+  });
+};
+

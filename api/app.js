@@ -6,6 +6,7 @@ const {
   postComment,
   getArticlesComments,
   patchArticles,
+  deleteComment
 } = require("./controllers/articles.controller");
 const { getTopics } = require("./controllers/topics.controller");
 const app = express();
@@ -18,6 +19,7 @@ app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id/comments", getArticlesComments);
 app.post("/api/articles/:article_id/comments", postComment);
 app.patch("/api/articles/:article_id", patchArticles);
+app.delete("/api/comments/:comment_id", deleteComment);
 
 app.use("*", (req, res, next) => {
   res.status(404).send({ msg: "404: Article not found" });
