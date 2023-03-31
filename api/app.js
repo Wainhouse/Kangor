@@ -20,6 +20,7 @@ app.get("/api/articles/:article_id", getArticlesById);
 app.get("/api/articles", getArticles);
 app.get("/api/users", getUsers);
 app.get("/api/articles/:article_id/comments", getArticlesComments);
+
 app.post("/api/articles/:article_id/comments", postComment);
 app.patch("/api/articles/:article_id", patchArticles);
 app.delete("/api/comments/:comment_id", deleteComment);

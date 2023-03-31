@@ -1,6 +1,5 @@
 const db = require("../../db/connection");
 
-
 exports.fetchArticleById = (id) => {
   return db
     .query(`SELECT * FROM articles WHERE article_id = $1;`, [id])
@@ -15,19 +14,51 @@ exports.fetchArticleById = (id) => {
     });
 };
 
-exports.fetchAllArticles = () => {
-  return db
-    .query(
-      `
+exports.fetchAllArticles = ({
+  sort_by = "created_at",
+  order = "desc",
+  topic,
+}) => {
+  const sortColumns = [
+    "article_id",
+    "title",
+    "author",
+    "created_at",
+    "votes",
+    "topic",
+    "comment_count",
+  ];
+  
+  if (!sortColumns.includes(sort_by)) {
+    sort_by = "created_at";
+  }
+  if (order !== "asc" && order !== "desc") {
+    order = "desc";
+  }
+
+  const query = `
     SELECT articles.*, CAST(COALESCE(COUNT(comments.article_id),0) AS INT) AS comment_count FROM
     articles
     LEFT JOIN comments on articles.article_id = comments.article_id
+    ${topic ? "WHERE articles.topic = $1" : ""}
     GROUP BY articles.article_id
-    ORDER BY articles.created_at DESC;
-  `
-    )
-    .then((data) => data.rows);
+    ORDER BY articles.${sort_by} ${order};
+  `;
+  const values = topic ? [topic] : [];
+  return db.query(query, values).then((data) => {
+    console.log("row count: ", data.rowCount);
+    if (data.rowCount === 0 && topic) {
+      console.log("im here");
+       throw{
+        status: 400,
+        msg: `400: Bad Request - Invalid topic value`
+      };
+    } else {
+    return data.rows;
+    }
+  });
 };
+
 
 exports.fetchArticlesComments = (article_id) => {
   const articleId = article_id;
@@ -62,12 +93,11 @@ exports.addComment = (comment, articleId) => {
       INSERT INTO comments (body, author, article_id)
       VALUES ($1, $2, $3)
       RETURNING *;
-    `
-    const values = [body, username, articleId];
+    `;
+  const values = [body, username, articleId];
 
-    return db.query(query, values)
-      .then((data) => data.rows[0])
-}
+  return db.query(query, values).then((data) => data.rows[0]);
+};
 
 exports.deleteCommentByID = (commentId) => {
   if (!commentId || isNaN(Number(commentId))) {
@@ -84,6 +114,4 @@ exports.deleteCommentByID = (commentId) => {
     return data.rows[0];
   });
 };
-
-
 

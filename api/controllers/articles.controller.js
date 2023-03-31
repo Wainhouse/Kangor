@@ -17,8 +17,12 @@ exports.getArticlesById = (req, res, next) => {
       next(err);
     });
 };
-exports.getArticles = (req, res) => {
-  fetchAllArticles().then((data) => res.status(200).send(data));
+exports.getArticles = (req, res, next) => {
+  const { sort_by, order, topic } = req.query;
+  fetchAllArticles({ sort_by, order, topic }).then((data) => res.status(200).send(data))
+  .catch((err) => {
+    next(err);
+  });
 };
 exports.getArticlesComments = (req, res, next) => {
   const articleId = req.params.article_id;
