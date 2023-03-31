@@ -289,13 +289,12 @@ describe("GET /api/users", () => {
       .get("/api/users")
       .expect(200)
       .then(({ body }) => {
-        expect(body).toBeInstanceOf(Array);
-        expect(body.length).toBeGreaterThan(0);
-        body.forEach((article) => {
-          expect(typeof article).toBe("object");
-          expect(article).toHaveProperty("username");
-          expect(article).toHaveProperty("name");
-          expect(article).toHaveProperty("avatar_url");
+        expect(body.users).toBeInstanceOf(Object);
+        expect(body.users.length).toBeGreaterThan(0);
+        body.users.forEach((article) => {
+          expect(article).toHaveProperty("username", expect.any(String));
+          expect(article).toHaveProperty("name", expect.any(String));
+          expect(article).toHaveProperty("avatar_url"), expect.any(String);
         });
       });
   });
