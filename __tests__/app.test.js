@@ -272,7 +272,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       });
   });
 });
-describe("DELETE api/comments/:comment_id", () => {
+describe("DELETE /api/comments/:comment_id", () => {
   it('Status 204 "No Content" - Delete Comment', () => {
     return request(app).delete("/api/comments/5").expect(204);
   });
@@ -281,5 +281,30 @@ describe("DELETE api/comments/:comment_id", () => {
   });
   it('Status 400 "Bad Request" - Incorrect comment id', () => {
     return request(app).delete("/api/comments/ada3q3e").expect(400);
+  });
+});
+describe("GET /api/users", () => {
+  test("200: returns array of users objects with correct props", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toBeInstanceOf(Array);
+        expect(body.length).toBeGreaterThan(0);
+        body.forEach((article) => {
+          expect(typeof article).toBe("object");
+          expect(article).toHaveProperty("username");
+          expect(article).toHaveProperty("name");
+          expect(article).toHaveProperty("avatar_url");
+        });
+      });
+  });
+  test("404: responds with a bad request message", () => {
+    return request(app)
+      .get("/api/userz")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("404: Article not found");
+      });
   });
 });

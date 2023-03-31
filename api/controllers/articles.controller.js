@@ -17,11 +17,9 @@ exports.getArticlesById = (req, res, next) => {
       next(err);
     });
 };
-
 exports.getArticles = (req, res) => {
   fetchAllArticles().then((data) => res.status(200).send(data));
 };
-
 exports.getArticlesComments = (req, res, next) => {
   const articleId = req.params.article_id;
   fetchArticleById(articleId)
@@ -37,7 +35,6 @@ exports.getArticlesComments = (req, res, next) => {
       next(err);
     });
 };
-
 exports.postComment = (req, res, next) => {
   const comment = req.body;
   const articleId = req.params.article_id;
@@ -58,7 +55,6 @@ exports.postComment = (req, res, next) => {
       next(err);
     });
 };
-
 exports.patchArticles = (req, res, next) => {
   const voteNum = req.body.inc_votes;
   const articleId = req.params.article_id;
@@ -73,7 +69,6 @@ exports.patchArticles = (req, res, next) => {
       next(err);
     });
 };
-
 exports.deleteComment = (req, res, next) => {
   const { comment_id: id } = req.params;
   deleteCommentByID(id)
@@ -81,7 +76,6 @@ exports.deleteComment = (req, res, next) => {
       res.status(204).send();
     })
     .catch((err) => {
-      console.log(err);
       next(err);
     });
 };
