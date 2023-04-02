@@ -1,10 +1,10 @@
-const { voteCounter } = require("../api/utils/utils");
+const { voteCounter, topicChecker } = require("../api/utils/utils");
+
 const {
   convertTimestampToDate,
   createRef,
   formatComments,
 } = require("../db/seeds/utils");
-
 describe("convertTimestampToDate", () => {
   test("returns a new object", () => {
     const timestamp = 1557572706232;
@@ -40,7 +40,6 @@ describe("convertTimestampToDate", () => {
     expect(result).toEqual(expected);
   });
 });
-
 describe("createRef", () => {
   test("returns an empty object, when passed an empty array", () => {
     const input = [];
@@ -74,7 +73,6 @@ describe("createRef", () => {
     expect(input).toEqual(control);
   });
 });
-
 describe("formatComments", () => {
   test("returns an empty array, if passed an empty array", () => {
     const comments = [];
@@ -103,7 +101,6 @@ describe("formatComments", () => {
     expect(formattedComments[0].created_at).toEqual(new Date(timestamp));
   });
 });
-
 describe('voteCounter()', () => {
   it('should return a number of a key when passed an obj', () => {
     const input = { inc_votes : 1 }
@@ -113,4 +110,15 @@ describe('voteCounter()', () => {
     expect(voteCounter(negInput)).toBe(-20)
   });
 });
-
+describe('topicChecker()', () => {
+  it('should return true  when passed a correct topic', async () => {
+    const input = 'paper';
+    const result = await topicChecker(input);
+    expect(result).toBe(true);
+  });
+  it('should returnfalse when passed an incorrect topic', async () => {
+    const input = 'michale';
+    const result = await topicChecker(input);
+    expect(result).toBe(false);
+  });
+});

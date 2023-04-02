@@ -8,6 +8,8 @@ const {
   commentData,
 } = require("../db/data/test-data/index");
 const db = require("../db/connection");
+
+
 require("jest-sorted");
 
 beforeEach(() => seed({ topicData, userData, articleData, commentData }));
@@ -308,6 +310,42 @@ describe("GET /api/users", () => {
   });
 });
 describe("GET /api/articles queries", () => {
+  test("200: returns array of articles objects with correct topic, and abides by defaults", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        expect(Array.isArray(body)).toBe(true);
+        expect(body).toBeSortedBy("created_at", { descending: true });
+        expect(body.length).toBeGreaterThan(0);
+        const article = body[0];
+        expect(article).toHaveProperty("article_id");
+        expect(article).toHaveProperty("title");
+        expect(article).toHaveProperty("body");
+        expect(article).toHaveProperty("topic");
+        expect(article).toHaveProperty("author");
+        expect(article).toHaveProperty("created_at");
+        expect(article).toHaveProperty("votes");
+      });
+  });
+  test("200: returns array of articles objects with correct topic, and abides by defaults", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        expect(Array.isArray(body)).toBe(true);
+        expect(body).toBeSortedBy("created_at", { descending: true });
+        expect(body.length).toBeGreaterThan(0);
+        const article = body[0];
+        expect(article).toHaveProperty("article_id");
+        expect(article).toHaveProperty("title");
+        expect(article).toHaveProperty("body");
+        expect(article).toHaveProperty("topic");
+        expect(article).toHaveProperty("author");
+        expect(article).toHaveProperty("created_at");
+        expect(article).toHaveProperty("votes");
+      });
+  });
   test("200: returns array of articles objects with correct props sorted desc article_id", () => {
     return request(app)
       .get("/api/articles?topic=mitch&sort_by=article_id&order=desc")
@@ -316,7 +354,6 @@ describe("GET /api/articles queries", () => {
         expect(Array.isArray(body)).toBe(true);
         expect(body).toBeSortedBy("article_id", { descending: true });
         expect(body.length).toBeGreaterThan(0);
-
         const article = body[0];
         expect(article).toHaveProperty("article_id");
         expect(article).toHaveProperty("title");
@@ -371,6 +408,8 @@ describe("GET /api/articles queries", () => {
       });
   });
 });
+
+
 
 
 

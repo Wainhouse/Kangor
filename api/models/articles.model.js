@@ -35,6 +35,7 @@ exports.fetchAllArticles = ({
   if (order !== "asc" && order !== "desc") {
     order = "desc";
   }
+  
 
   const query = `
     SELECT articles.*, CAST(COALESCE(COUNT(comments.article_id),0) AS INT) AS comment_count FROM
@@ -56,8 +57,6 @@ exports.fetchAllArticles = ({
     }
   });
 };
-
-
 exports.fetchArticlesComments = (article_id) => {
   const articleId = article_id;
   return db
@@ -69,7 +68,6 @@ exports.fetchArticlesComments = (article_id) => {
       return data.rows;
     });
 };
-
 exports.updateArticle = (article, voteNum) => {
   const articleNewVotes = (article.votes += voteNum);
   const articleId = article.article_id;
@@ -96,7 +94,6 @@ exports.addComment = (comment, articleId) => {
 
   return db.query(query, values).then((data) => data.rows[0]);
 };
-
 exports.deleteCommentByID = (commentId) => {
   if (!commentId || isNaN(Number(commentId))) {
     throw { status: 400, msg: "400: Bad Request - Invalid Comment ID" };
