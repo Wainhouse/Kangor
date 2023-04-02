@@ -85,6 +85,7 @@ describe("GET /api/articles ID", () => {
             topic: "mitch",
             author: "butter_bridge",
             body: "I find this existence challenging",
+            comment_count: 11,
             created_at: "2020-07-09T20:11:00.000Z",
             votes: 100,
             article_img_url:
@@ -126,6 +127,7 @@ describe("GET /api/articles/:comments_id", () => {
           expect(comment).toHaveProperty("votes");
           expect(comment).toHaveProperty("author");
           expect(comment).toHaveProperty("created_at");
+          expect(comment).toHaveProperty("comment_count");
         });
       });
   });
