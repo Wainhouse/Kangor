@@ -4,7 +4,6 @@ require("dotenv").config({
   path: `${__dirname}/../.env.${ENV}`,
 });
 
-console.log(process.env.DATABASE_URL);
 
 const config =
   ENV === "production"
