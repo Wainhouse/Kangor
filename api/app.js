@@ -1,5 +1,5 @@
 const express = require("express");
-
+const endpoints = require("../endpoints.json")
 const {
   getArticlesById,
   getArticles,
@@ -15,6 +15,13 @@ const app = express();
 
 app.use(express.json());
 
+app.get("/api", (req, res, next) => {
+  try {
+    res.status(200).json(endpoints);
+  } catch (err) {
+    next(err);
+  }
+});
 app.get("/api/topics", getTopics);
 app.get("/api/articles/:article_id", getArticlesById);
 app.get("/api/articles", getArticles);
@@ -26,7 +33,7 @@ app.patch("/api/articles/:article_id", patchArticles);
 app.delete("/api/comments/:comment_id", deleteComment);
 
 app.use("*", (req, res, next) => {
-  res.status(404).send({ msg: "404: Article not found" });
+  res.status(404).send({ msg: "404: not found" });
 });
 app.use((err, req, res, next) => {
   if (err.status && err.msg) {
