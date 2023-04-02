@@ -2,7 +2,13 @@ const db = require("../../db/connection");
 
 exports.fetchArticleById = (id) => {
   return db
-    .query(`SELECT * FROM articles WHERE article_id = $1;`, [id])
+    .query(`SELECT articles.*, CAST(COALESCE(COUNT(comments.article_id),0) AS INT) AS comment_count FROM
+    articles
+    LEFT JOIN comments on articles.article_id = comments.article_id
+    WHERE articles.article_id = $1
+    GROUP BY articles.article_id
+    ORDER BY articles.created_at DESC;
+  `, [id])
     .then((data) => {
       if (!data.rows.length) {
         return Promise.reject({
