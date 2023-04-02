@@ -1,6 +1,7 @@
 const app = require("../api/app");
 const request = require("supertest");
 const seed = require("../db/seeds/seed");
+const endpoints = require("../endpoints.json")
 const {
   topicData,
   userData,
@@ -37,7 +38,7 @@ describe("GET /api/topics", () => {
       .get("/api/topppes")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("404: Article not found");
+        expect(body.msg).toBe("404: not found");
       });
   });
 });
@@ -68,7 +69,7 @@ describe("GET /api/articles", () => {
       .get("/api/topppes")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("404: Article not found");
+        expect(body.msg).toBe("404: not found");
       });
   });
 });
@@ -100,7 +101,7 @@ describe("GET /api/articles ID", () => {
       .get("/api/article/1234567890")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("404: Article not found");
+        expect(body.msg).toBe("404: not found");
       });
   });
   test("400: responds with an Internal server error", () => {
@@ -191,7 +192,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .send(newVote)
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("404: Article not found");
+        expect(body.msg).toBe("404: not found");
       });
   });
 });
@@ -307,7 +308,7 @@ describe("GET /api/users", () => {
       .get("/api/userz")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("404: Article not found");
+        expect(body.msg).toBe("404: not found");
       });
   });
 });
@@ -406,11 +407,30 @@ describe("GET /api/articles queries", () => {
       .get("/api/arti?topic=mitch&sort_by=votes&order=asc")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("404: Article not found");
+        expect(body.msg).toBe("404: not found");
       });
   });
 });
 
+describe('getAPI()', () => {
+  it('200 - should return a full obj of possible endpoints for api endpoint ', () => {
+    return request(app)
+    .get("/api")
+    .expect(200)
+    .then(({body}) => {
+      expect(body).toEqual(endpoints)
+      expect(body).toBeDefined();
+    })
+  });
+  test("404: responds with a bad request message", () => {
+    return request(app)
+      .get("/apu")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("404: not found");
+      });
+  });
+});
 
 
 
