@@ -28,7 +28,6 @@ exports.getArticlesComments = (req, res, next) => {
   const articleId = req.params.article_id;
   fetchArticleById(articleId)
     .then((data) => {
-      res.status(200).send({ comments: [data] });
       if (data) return fetchArticlesComments(articleId);
       else Promise.reject({ status: 404, msg: "Article not found" });
     })
