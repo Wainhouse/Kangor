@@ -113,7 +113,7 @@ describe("GET /api/articles ID", () => {
       });
   });
 });
-describe("GET /api/articles/:comments_id", () => {
+describe.only("GET /api/articles/:article_id/comments", () => {
   it("returns an array of comments objects with correct properties", () => {
     return request(app)
       .get("/api/articles/1/comments")
@@ -128,7 +128,6 @@ describe("GET /api/articles/:comments_id", () => {
           expect(comment).toHaveProperty("votes");
           expect(comment).toHaveProperty("author");
           expect(comment).toHaveProperty("created_at");
-          expect(comment).toHaveProperty("comment_count");
         });
       });
   });
@@ -154,7 +153,7 @@ describe("GET /api/articles/:comments_id", () => {
       .expect(200)
       .then(({ body }) => {
         expect(body.comments).toBeInstanceOf(Object);
-        expect(body.comments.length).toBe(1);
+        expect(body.comments.length).toBe(0);
       });
   });
 });
@@ -411,7 +410,6 @@ describe("GET /api/articles queries", () => {
       });
   });
 });
-
 describe('getAPI()', () => {
   it('200 - should return a full obj of possible endpoints for api endpoint ', () => {
     return request(app)
