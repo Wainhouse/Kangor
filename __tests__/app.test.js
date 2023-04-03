@@ -113,7 +113,7 @@ describe("GET /api/articles ID", () => {
       });
   });
 });
-describe.only("GET /api/articles/:article_id/comments", () => {
+describe("GET /api/articles/:article_id/comments", () => {
   it("returns an array of comments objects with correct properties", () => {
     return request(app)
       .get("/api/articles/1/comments")
