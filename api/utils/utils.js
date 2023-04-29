@@ -1,12 +1,12 @@
 const db = require("../../db/connection");
 
-exports.topicChecker = (topic) => {
+exports.topicChecker = async (topic) => {
   const articleTopic = topic;
   const topicsPropQuery = `SELECT * FROM topics
   WHERE slug = $1;`;
   const topicsPropValues = [articleTopic];
-  return db.query(topicsPropQuery, topicsPropValues).then((data) => {
-    if (data.rows.length > 0) { 
+  return await db.query(topicsPropQuery, topicsPropValues).then((data) => {
+    if (data.rows.length > 0) {
       const slugValue = data.rows[0].slug;
       if (slugValue === topic) {
         return true;
@@ -18,7 +18,6 @@ exports.topicChecker = (topic) => {
     }
   });
 };
-
 
 exports.voteCounter = (voteObj) => {
   const voteObjCopy = { ...voteObj };

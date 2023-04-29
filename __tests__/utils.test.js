@@ -116,7 +116,7 @@ describe('topicChecker()', () => {
     const result = await topicChecker(input);
     expect(result).toBe(true);
   });
-  it('should returnfalse when passed an incorrect topic', async () => {
+  it('should return false when passed an incorrect topic', async () => {
     const input = 'michale';
     const result = await topicChecker(input);
     expect(result).toBe(false);

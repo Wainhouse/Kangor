@@ -1,7 +1,7 @@
 const app = require("../api/app");
 const request = require("supertest");
 const seed = require("../db/seeds/seed");
-const endpoints = require("../endpoints.json")
+const endpoints = require("../endpoints.json");
 const {
   topicData,
   userData,
@@ -9,7 +9,6 @@ const {
   commentData,
 } = require("../db/data/test-data/index");
 const db = require("../db/connection");
-
 
 require("jest-sorted");
 
@@ -374,7 +373,7 @@ describe("GET /api/articles queries", () => {
         expect(Array.isArray(body)).toBe(true);
         expect(body).toBeSortedBy("votes", { descending: false });
         expect(body.length).toBeGreaterThan(0);
-  
+
         const article = body[0];
         expect(article).toHaveProperty("article_id");
         expect(article).toHaveProperty("title");
@@ -390,7 +389,7 @@ describe("GET /api/articles queries", () => {
       .get("/api/articles?topic=invalid&sort_by=article_id&order=asc")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("400: Bad Request - Invalid topic value");
+        expect(body.msg).toBe("Invalid topic value: invalid");
       });
   });
   test("404: responds with a bad request message when an invalid article ID is provided", () => {
@@ -410,15 +409,15 @@ describe("GET /api/articles queries", () => {
       });
   });
 });
-describe('getAPI()', () => {
-  it('200 - should return a full obj of possible endpoints for api endpoint ', () => {
+describe("getAPI()", () => {
+  it("200 - should return a full obj of possible endpoints for api endpoint ", () => {
     return request(app)
-    .get("/api")
-    .expect(200)
-    .then(({body}) => {
-      expect(body).toEqual(endpoints)
-      expect(body).toBeDefined();
-    })
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toEqual(endpoints);
+        expect(body).toBeDefined();
+      });
   });
   test("404: responds with a bad request message", () => {
     return request(app)
@@ -429,7 +428,3 @@ describe('getAPI()', () => {
       });
   });
 });
-
-
-
-
