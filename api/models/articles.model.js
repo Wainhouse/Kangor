@@ -1,14 +1,18 @@
 const db = require("../../db/connection");
+const { topicChecker } = require("../utils/utils");
 
 exports.fetchArticleById = (id) => {
   return db
-    .query(`SELECT articles.*, CAST(COALESCE(COUNT(comments.article_id),0) AS INT) AS comment_count FROM
+    .query(
+      `SELECT articles.*, CAST(COALESCE(COUNT(comments.article_id),0) AS INT) AS comment_count FROM
     articles
     LEFT JOIN comments on articles.article_id = comments.article_id
     WHERE articles.article_id = $1
     GROUP BY articles.article_id
     ORDER BY articles.created_at DESC;
-  `, [id])
+  `,
+      [id]
+    )
     .then((data) => {
       if (!data.rows.length) {
         return Promise.reject({
@@ -20,12 +24,21 @@ exports.fetchArticleById = (id) => {
     });
 };
 
-exports.fetchAllArticles = ({
+exports.fetchAllArticles = async ({
   sort_by = "created_at",
   order = "desc",
   topic,
-}) => {
-  const sortColumns = [
+} = {}) => {
+  if (topic) {
+    if (!(await topicChecker(topic))) {
+      throw {
+        status: 400,
+        msg: `Invalid topic value: ${topic}`,
+      };
+    }
+  }
+
+  const validSortColumns = [
     "article_id",
     "title",
     "author",
@@ -34,35 +47,37 @@ exports.fetchAllArticles = ({
     "topic",
     "comment_count",
   ];
-  
-  if (!sortColumns.includes(sort_by)) {
+
+  if (!validSortColumns.includes(sort_by)) {
     sort_by = "created_at";
   }
+
   if (order !== "asc" && order !== "desc") {
     order = "desc";
   }
-  
 
   const query = `
-    SELECT articles.*, CAST(COALESCE(COUNT(comments.article_id),0) AS INT) AS comment_count FROM
-    articles
-    LEFT JOIN comments on articles.article_id = comments.article_id
+    SELECT articles.*, COALESCE(COUNT(comments.article_id), 0) AS comment_count
+    FROM articles
+    LEFT JOIN comments ON articles.article_id = comments.article_id
     ${topic ? "WHERE articles.topic = $1" : ""}
     GROUP BY articles.article_id
-    ORDER BY articles.${sort_by} ${order};
+    ORDER BY ${sort_by} ${order};
   `;
+
   const values = topic ? [topic] : [];
-  return db.query(query, values).then((data) => {
-    if (data.rowCount === 0 && topic) {
-       throw{
-        status: 400,
-        msg: `400: Bad Request - Invalid topic value`
-      };
-    } else {
-    return data.rows;
-    }
-  });
+
+  try {
+    const result = await db.query(query, values);
+    return result.rows;
+  } catch (error) {
+    throw {
+      status: 500,
+      msg: error.message,
+    };
+  }
 };
+
 exports.fetchArticlesComments = (article_id) => {
   const articleId = article_id;
   return db
@@ -115,4 +130,3 @@ exports.deleteCommentByID = (commentId) => {
     return data.rows[0];
   });
 };
-
