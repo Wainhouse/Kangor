@@ -28,10 +28,12 @@ exports.getArticles = (req, res, next) => {
     });
 };
 exports.getArticlesComments = (req, res, next) => {
+  const limit = parseInt(req.query.limit) || 10;
+  const page = parseInt(req.query.p) || 1;
   const articleId = req.params.article_id;
   fetchArticleById(articleId)
     .then((data) => {
-      if (data) return fetchArticlesComments(articleId);
+      if (data) return fetchArticlesComments(articleId, limit, page);
       else Promise.reject({ status: 404, msg: "Article not found" });
     })
     .then((data) => {

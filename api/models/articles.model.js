@@ -23,7 +23,6 @@ exports.fetchArticleById = (id) => {
       return data.rows[0];
     });
 };
-
 exports.fetchAllArticles = async ({
   sort_by = "created_at",
   order = "desc",
@@ -77,16 +76,22 @@ exports.fetchAllArticles = async ({
     };
   }
 };
-exports.fetchArticlesComments = (article_id) => {
-  const articleId = article_id;
-  return db
-    .query(
-      `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC;`,
-      [articleId]
-    )
-    .then((data) => {
-      return data.rows;
-    });
+exports.fetchArticlesComments = (articleId, limit, page) => {
+  const article_Id = articleId;
+  try {
+    const offset = (page - 1) * limit;
+    return db
+      .query(
+        `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC
+        LIMIT $2 OFFSET $3;`,
+        [article_Id, limit, offset]
+      )
+      .then((data) => {
+        return data.rows;
+      });
+  } catch (err) {
+    return err;
+  }
 };
 exports.updateArticle = (article, voteNum) => {
   const articleNewVotes = (article.votes += voteNum);

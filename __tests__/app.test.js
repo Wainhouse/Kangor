@@ -274,6 +274,37 @@ describe("POST /api/articles/:article_id/comments", () => {
         );
       });
   });
+  test("200: returns an array of comments objects with correct properties", () => {
+    const articleId = 1;
+    const limit = 10;
+    const page = 2;
+    return request(app)
+      .get(`/api/articles/${articleId}/comments?limit=${limit}&p=${page}`)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toBeInstanceOf(Object);
+        body.comments.forEach((comment) => {
+          expect(typeof comment).toBe("object");
+          expect(comment).toHaveProperty("comment_id");
+          expect(comment).toHaveProperty("author");
+          expect(comment).toHaveProperty("article_id");
+          expect(comment).toHaveProperty("votes");
+          expect(comment).toHaveProperty("created_at");
+          expect(comment).toHaveProperty("body");
+        });
+      });
+  });
+  test("404: responds with an error message when article is not found", () => {
+    const articleId = 1000;
+    const limit = 10;
+    const page = 1;
+    return request(app)
+      .get(`/api/articles/${articleId}/comments?limit=${limit}&p=${page}`)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("404: Article not found");
+      });
+  });
 });
 describe("POST /api/articles/:article_id", () => {
   it("201 - responds with a newly created article ", () => {
