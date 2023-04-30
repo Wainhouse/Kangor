@@ -130,3 +130,18 @@ exports.deleteCommentByID = (commentId) => {
     return data.rows[0];
   });
 };
+exports.deleteArticleByID = (articleId) => {
+  if (!articleId || isNaN(Number(articleId))) {
+    throw { status: 400, msg: "400: Bad Request - Invalid Article ID" };
+  }
+  const query = `
+      DELETE FROM articles WHERE article_id = $1 RETURNING *;
+    `;
+  const values = [articleId];
+  return db.query(query, values).then((data) => {
+    if (data.rows.length === 0) {
+      throw { status: 404, msg: "404: Not Found - Article does not exist" };
+    }
+    return data.rows[0];
+  });
+};

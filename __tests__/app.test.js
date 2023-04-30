@@ -286,6 +286,17 @@ describe("DELETE /api/comments/:comment_id", () => {
     return request(app).delete("/api/comments/ada3q3e").expect(400);
   });
 });
+describe("DELETE /api/article/:article_id", () => {
+  it('Status 204 "No Content" - Delete article', () => {
+    return request(app).delete("/api/articles/2").expect(204);
+  });
+  it('Status 404 "Not Found" - article id does not exists', () => {
+    return request(app).delete("/api/articles/1123423").expect(404);
+  });
+  it('Status 400 "Bad Request" - Incorrect article id', () => {
+    return request(app).delete("/api/articles/ada3q3e").expect(400);
+  });
+});
 describe("GET /api/users", () => {
   test("200: returns array of users objects with correct props", () => {
     return request(app)
