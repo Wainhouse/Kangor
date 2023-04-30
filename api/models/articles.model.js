@@ -77,7 +77,6 @@ exports.fetchAllArticles = async ({
     };
   }
 };
-
 exports.fetchArticlesComments = (article_id) => {
   const articleId = article_id;
   return db
@@ -103,7 +102,6 @@ exports.updateArticle = (article, voteNum) => {
     return data.rows[0];
   });
 };
-
 exports.addComment = (comment, articleId) => {
   const { body, username } = comment;
   const query = `
@@ -114,6 +112,48 @@ exports.addComment = (comment, articleId) => {
   const values = [body, username, articleId];
 
   return db.query(query, values).then((data) => data.rows[0]);
+};
+exports.addArticle = async (article) => {
+  try {
+    const { title, topic, username, body, article_img_url } = article;
+    let topicId;
+    const topicQuery = `
+      SELECT slug FROM topics WHERE slug = $1;
+      `;
+    const topicValues = [topic];
+    const topicResult = await db.query(topicQuery, topicValues);
+
+    if (topicResult.rows.length > 0) {
+      topicId = topicResult.rows[0].id;
+    } else {
+      const insertTopicQuery = `
+      INSERT INTO topics (slug) VALUES ($1) RETURNING slug;
+      `;
+      const insertTopicValues = [topic];
+      const insertTopicResult = await db.query(
+        insertTopicQuery,
+        insertTopicValues
+      );
+      topicId = insertTopicResult.rows[0].slug;
+    }
+    const authorQuery = `
+    SELECT * FROM users WHERE username = $1
+    ;
+    `;
+    const authorValues = [username];
+    const authorResult = await db.query(authorQuery, authorValues);
+
+    const articleQuery = `
+      INSERT INTO articles (title, topic, author, body, article_img_url)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING *;
+    `;
+    const articleValues = [title, topicId, username, body, article_img_url];
+    const articleResult = await db.query(articleQuery, articleValues);
+    return articleResult.rows[0];
+  } catch (error) {
+    throw error;
+  }
 };
 exports.deleteCommentByID = (commentId) => {
   if (!commentId || isNaN(Number(commentId))) {
