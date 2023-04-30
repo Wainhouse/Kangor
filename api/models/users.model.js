@@ -17,7 +17,6 @@ exports.fetchUsersById = async (username) => {
       values: [username],
     };
     const { rows } = await db.query(query);
-    console.log(rows);
     if (rows.length === 0) {
       throw {
         status: 404,
@@ -26,7 +25,6 @@ exports.fetchUsersById = async (username) => {
     }
     return rows;
   } catch (err) {
-    console.log(err);
     throw err;
   }
 };

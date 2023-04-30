@@ -585,7 +585,6 @@ describe("GET /api/users/:username", () => {
           avatar_url:
             "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
         });
-        console.log(body);
       });
   });
 
