@@ -1,0 +1,18 @@
+const express = require("express");
+const articleRouter = express.Router();
+
+const {
+  getArticlesById,
+  getArticles,
+  getArticlesComments,
+  patchArticles,
+  postComment,
+} = require("../api/controllers/articles.controller");
+
+articleRouter.get("/", getArticles);
+articleRouter.get("/:article_id/comments", getArticlesComments);
+articleRouter.get("/:article_id", getArticlesById);
+articleRouter.patch("/:article_id", patchArticles);
+articleRouter.post("/:article_id/comments", postComment);
+
+module.exports = articleRouter;
