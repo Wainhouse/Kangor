@@ -270,7 +270,110 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe(
-          "400: not found, make sure you have included a username and a comment"
+          "400: not found, make sure you have included the required fields"
+        );
+      });
+  });
+});
+describe("POST /api/articles/:article_id", () => {
+  it("201 - responds with a newly created article ", () => {
+    const newArticle = {
+      title: "What the hell is up man",
+      topic: "football",
+      username: "butter_bridge",
+      body: "It's all over hellllll.",
+      article_img_url:
+        "https://images.pexels.com/photos/3621104/pexels-photo-3621104.jpeg?w=700&h=700",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.article.title).toBe("What the hell is up man");
+        expect(body.article.author).toBe("butter_bridge");
+        expect(body.article.votes).toBe(0);
+        expect(body.article.article_img_url).toBe(
+          "https://images.pexels.com/photos/3621104/pexels-photo-3621104.jpeg?w=700&h=700"
+        );
+        expect(typeof body.article).toBe("object");
+        expect(body.article.article_id).toBeGreaterThan(0);
+      });
+  });
+  it("201 - POST should  also ignore unnecessary properties", () => {
+    const newArticle = {
+      title: "What the hell is up man",
+      topic: "football",
+      username: "butter_bridge",
+      body: "It's all over hellllll.",
+      votes: 0,
+      test: "test",
+      article_img_url:
+        "https://images.pexels.com/photos/3621104/pexels-photo-3621104.jpeg?w=700&h=700",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.article.votes).toBe(0);
+        expect(body.article.body).toBe("It's all over hellllll.");
+        expect(body.article.author).toBe("butter_bridge");
+      });
+  });
+  it("404 - POST request where url doesnt exist", () => {
+    const newArticle = {
+      title: "What the hell is up man",
+      topic: "coding",
+      username: "tickle122",
+      body: "It's all over hellllll.",
+      votes: 0,
+      test: "test",
+      article_img_url:
+        "https://images.pexels.com/photos/3621104/pexels-photo-3621104.jpeg?w=700&h=700",
+    };
+    return request(app)
+      .post("/api/articl")
+      .send(newArticle)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("404: not found");
+      });
+  });
+  it("404 - POST request for an article for a username that doesnt exist", () => {
+    const newArticle = {
+      title: "What the hell is up man",
+      topic: "coding",
+      username: "wayne",
+      body: "It's all over hellllll.",
+      votes: 0,
+      article_img_url:
+        "https://images.pexels.com/photos/3621104/pexels-photo-3621104.jpeg?w=700&h=700",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("404: User not found");
+      });
+  });
+  it("400 - POST missing required fields of username or body", () => {
+    const newArticle = {
+      title: "What the hell is up man",
+      topic: "coding",
+      votes: 0,
+      article_img_url:
+        "https://images.pexels.com/photos/3621104/pexels-photo-3621104.jpeg?w=700&h=700",
+    };
+
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe(
+          "400: not found, make sure you have included the required fields"
         );
       });
   });

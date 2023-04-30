@@ -4,6 +4,7 @@ const {
   fetchArticlesComments,
   updateArticle,
   addComment,
+  addArticle,
   deleteCommentByID,
   deleteArticleByID,
 } = require("../models/articles.model");
@@ -45,7 +46,7 @@ exports.postComment = (req, res, next) => {
   const articleId = req.params.article_id;
   if (!comment.body || !comment.username) {
     return res.status(400).send({
-      msg: `400: not found, make sure you have included a username and a comment`,
+      msg: "400: not found, make sure you have included the required fields",
     });
   }
 
@@ -55,6 +56,22 @@ exports.postComment = (req, res, next) => {
     })
     .then((data) => {
       res.status(201).send({ comment: data });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+exports.postArticle = (req, res, next) => {
+  const article = req.body;
+  if (!article.body || !article.username) {
+    return res.status(400).send({
+      msg: "400: not found, make sure you have included the required fields",
+    });
+  }
+
+  addArticle(article)
+    .then((data) => {
+      res.status(201).json({ article: data });
     })
     .catch((err) => {
       next(err);
