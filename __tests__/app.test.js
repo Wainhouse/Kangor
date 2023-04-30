@@ -16,7 +16,6 @@ beforeEach(() => seed({ topicData, userData, articleData, commentData }));
 afterAll(() => {
   if (db.end) db.end();
 });
-
 describe("GET /api/topics", () => {
   test("200: returns array of topics objects with correct props", () => {
     return request(app)
@@ -567,6 +566,32 @@ describe("getAPI()", () => {
   test("404: responds with a bad request message", () => {
     return request(app)
       .get("/apu")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("404: not found");
+      });
+  });
+});
+
+describe("GET /api/users/:username", () => {
+  test("responds with correct user object and status 200", async () => {
+    return await request(app)
+      .get("/api/users/butter_bridge")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.users[0]).toEqual({
+          username: "butter_bridge",
+          name: "jonny",
+          avatar_url:
+            "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+        });
+        console.log(body);
+      });
+  });
+
+  test("responds with a 404 status and error message when username does not exist", () => {
+    return request(app)
+      .get("/api/users/wayne")
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("404: not found");
